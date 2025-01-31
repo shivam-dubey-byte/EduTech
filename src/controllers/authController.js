@@ -1,32 +1,51 @@
-const User = require('../models/userModel');
-const { generateToken } = require('../utils/jwt');
+const { createUser, findUserByEmail, comparePassword } = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
+// User Signup
 const signup = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const userExists = await User.findOne({ email });
 
-    if (userExists) return res.status(400).json({ message: 'User already exists' });
+    // Check if user already exists
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
 
-    const newUser = await User.create({ email, password });
-    res.status(201).json({ message: 'User created successfully', userId: newUser._id });
+    // Create new user
+    const userId = await createUser(email, password);
+    res.status(201).json({ message: 'User signed up successfully', userId });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
+// User Login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
-    if (!user || !(await user.comparePassword(password)))
-      return res.status(401).json({ message: 'Invalid credentials' });
+    // Find user in DB
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
 
-    const token = generateToken({ id: user._id }, process.env.JWT_SECRET, process.env.JWT_EXPIRATION);
+    // Compare passwords
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
