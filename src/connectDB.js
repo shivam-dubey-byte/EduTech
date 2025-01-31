@@ -1,10 +1,10 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const uri = "mongodb+srv://s1r9d11:iP6QSedJjLkmqT9y@edtech.kzpkk.mongodb.net/?retryWrites=true&w=majority&appName=EdTech&tls=true";
+const uri = "mongodb+srv://s1r9d11:iP6QSedJjLkmqT9y@edtech.kzpkk.mongodb.net/user?retryWrites=true&w=majority&appName=EdTech&tls=true";
 
 const connectDB = async () => {
   try { //process.env.MONGO_URI
-    const client = new MongoClient(uri,{tls:true,ssl:true,
+    const client = new MongoClient(uri,{
       serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -21,6 +21,8 @@ const connectDB = async () => {
   }
 };
 
+
+module.exports = connectDB;
 /*
 const connectDB = async () => {
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -48,5 +50,3 @@ run().catch(console.dir);
 
 };*/
 //connectDB();
-
-module.exports = connectDB;
