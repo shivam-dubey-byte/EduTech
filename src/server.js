@@ -1,8 +1,8 @@
 const app = require('./app');
-const PORT = 5001;//process.env.PORT || 5001;
+const PORT = process.env.PORT || 5001;
 
 
 
-app.listen(PORT, () => {
+app.listen(3001, () => {
   console.log(`Auth Service running on http://localhost:${PORT}`);
 });
