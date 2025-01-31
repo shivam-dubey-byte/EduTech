@@ -4,7 +4,7 @@ const uri = "mongodb+srv://s1r9d11:iP6QSedJjLkmqT9y@edtech.kzpkk.mongodb.net/?re
 
 const connectDB = async () => {
   try { //process.env.MONGO_URI
-    const client = new MongoClient(uri,{useNewUrlParser:true,useUnifiedTopology: true, ssl:true,
+    const client = new MongoClient(uri,{tls:true,ssl:true,
       serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -14,7 +14,7 @@ const connectDB = async () => {
               //{ useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
     console.log('Connected to MongoDB');
-    return client.db();  // Return the database instance
+    return client.db("user");  // Return the database instance
   } catch (error) {
     console.error('MongoDB connection error:', error);
     process.exit(1);  // Exit the application if connection fails
